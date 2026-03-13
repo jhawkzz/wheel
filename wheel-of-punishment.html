@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Wheel of Punishment! 🎡</title>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a0a2e;
+    --card: #2d1554;
+    --accent1: #ff3c6e;
+    --accent2: #ffbe00;
+    --accent3: #00e5ff;
+    --accent4: #7fff6e;
+    --text: #fff;
+    --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 20% 20%, #3d0068 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, #001a68 0%, transparent 50%);
+  }
+
+  /* Stars background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 55%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 25%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 65%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(2px 2px at 45% 45%, rgba(255,255,255,0.3) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    padding: 20px 16px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  header {
+    text-align: center;
+    padding-top: 8px;
+  }
+
+  .title {
+    font-family: 'Boogaloo', cursive;
+    font-size: 2.8rem;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent2), var(--accent1), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 2px 8px rgba(255,60,110,0.4));
+    letter-spacing: 1px;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.55);
+    margin-top: 4px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Wheel section */
+  .wheel-section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .wheel-outer {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    filter: drop-shadow(0 0 30px rgba(255,190,0,0.3));
+  }
+
+  /* Pointer */
+  .pointer {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-top: 40px solid var(--accent2);
+    z-index: 10;
+    filter: drop-shadow(0 4px 8px rgba(255,190,0,0.6));
+  }
+  .pointer::after {
+    content: '';
+    position: absolute;
+    top: -44px;
+    left: -10px;
+    width: 20px;
+    height: 10px;
+    background: var(--accent2);
+    border-radius: 4px 4px 0 0;
+  }
+
+  canvas#wheelCanvas {
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 6px rgba(255,255,255,0.1),
+      0 0 0 12px rgba(255,190,0,0.15),
+      0 8px 40px rgba(0,0,0,0.6);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  canvas#wheelCanvas:hover { transform: scale(1.02); }
+  canvas#wheelCanvas:active { transform: scale(0.98); }
+
+  /* Center button */
+  .center-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent1), #c0003a);
+    border: 4px solid rgba(255,255,255,0.3);
+    color: white;
+    font-family: 'Boogaloo', cursive;
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(255,60,110,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: all 0.2s;
+    z-index: 11;
+    text-align: center;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .center-btn:hover {
+    transform: translate(-50%, -50%) scale(1.08);
+    box-shadow: 0 6px 28px rgba(255,60,110,0.7), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .center-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Result card */
+  .result-card {
+    background: linear-gradient(135deg, var(--card), #3d1b70);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 20px 24px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--shadow);
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .result-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 800;
+  }
+
+  .result-text {
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.7rem;
+    line-height: 1.2;
+    color: var(--accent2);
+    text-shadow: 0 2px 12px rgba(255,190,0,0.4);
+  }
+
+  .result-emoji {
+    font-size: 2rem;
+  }
+
+  .result-placeholder {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.25);
+    font-weight: 700;
+  }
+
+  /* Punishments list */
+  .punishments-section {
+    width: 100%;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.3rem;
+    color: var(--accent3);
+    letter-spacing: 1px;
+  }
+
+  .add-btn {
+    background: linear-gradient(135deg, var(--accent3), #0090a8);
+    color: #001a20;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0,229,255,0.3);
+  }
+  .add-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,229,255,0.5);
+  }
+
+  .punishments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .punishments-list::-webkit-scrollbar { width: 4px; }
+  .punishments-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+  .punishments-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+  .punishment-item {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px) scale(0.95); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+  }
+
+  .punishment-item:hover { background: rgba(255,255,255,0.1); }
+
+  .punishment-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px currentColor;
+  }
+
+  .punishment-emoji {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .punishment-name {
+    flex: 1;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.9);
+  }
+
+  .delete-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.2);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 2px 6px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .delete-btn:hover { color: var(--accent1); background: rgba(255,60,110,0.15); }
+
+  /* Add modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: linear-gradient(135deg, #2d1554, #1a0a2e);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 28px 28px 0 0;
+    padding: 28px 24px 40px;
+    width: 100%;
+    max-width: 480px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.6);
+  }
+  .modal-overlay.open .modal {
+    transform: translateY(0);
+  }
+
+  .modal-handle {
+    width: 40px;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .modal-title {
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.5rem;
+    color: var(--accent2);
+    margin-bottom: 16px;
+  }
+
+  .input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .emoji-input {
+    width: 58px;
+    height: 52px;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    color: white;
+    font-size: 1.4rem;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+    flex-shrink: 0;
+  }
+  .emoji-input:focus { border-color: var(--accent3); }
+
+  .text-input {
+    flex: 1;
+    height: 52px;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .text-input:focus { border-color: var(--accent3); }
+  .text-input::placeholder { color: rgba(255,255,255,0.3); }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .cancel-btn {
+    flex: 1;
+    height: 50px;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    color: rgba(255,255,255,0.6);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cancel-btn:hover { background: rgba(255,255,255,0.12); }
+
+  .confirm-btn {
+    flex: 2;
+    height: 50px;
+    background: linear-gradient(135deg, var(--accent1), #c0003a);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(255,60,110,0.4);
+    transition: all 0.2s;
+  }
+  .confirm-btn:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(255,60,110,0.6); }
+
+  /* Result overlay */
+  .result-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  .result-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .result-popup {
+    background: linear-gradient(135deg, #3d1b70, #1a0a2e);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 32px;
+    padding: 40px 32px;
+    text-align: center;
+    max-width: 340px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 60px rgba(255,190,0,0.15);
+    transform: scale(0.7) rotate(-3deg);
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .result-overlay.show .result-popup { transform: scale(1) rotate(0deg); }
+
+  .popup-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+
+  .popup-emoji {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 12px;
+    animation: bounce 0.6s ease infinite alternate;
+  }
+
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-10px); }
+  }
+
+  .popup-punishment {
+    font-family: 'Boogaloo', cursive;
+    font-size: 2.2rem;
+    color: var(--accent2);
+    text-shadow: 0 2px 20px rgba(255,190,0,0.5);
+    line-height: 1.2;
+    margin-bottom: 24px;
+  }
+
+  .dismiss-btn {
+    background: linear-gradient(135deg, var(--accent1), #c0003a);
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1rem;
+    padding: 14px 36px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(255,60,110,0.4);
+    transition: all 0.2s;
+    width: 100%;
+  }
+  .dismiss-btn:hover { transform: scale(1.03); }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    z-index: 300;
+    pointer-events: none;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  @keyframes wheelSpin {
+    from { transform: rotate(0deg); }
+  }
+
+  .spinning canvas {
+    animation: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="title">🎡 Wheel of Punishment!</div>
+    <div class="subtitle">Misbehave? Time to spin!</div>
+  </header>
+
+  <div class="wheel-section">
+    <div class="wheel-outer">
+      <div class="pointer"></div>
+      <canvas id="wheelCanvas" width="320" height="320"></canvas>
+      <button class="center-btn" id="spinBtn" onclick="spinWheel()">SPIN!</button>
+    </div>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="result-placeholder">👆 Spin to reveal your punishment!</div>
+  </div>
+
+  <div class="punishments-section">
+    <div class="section-header">
+      <div class="section-title">🎯 Punishments</div>
+      <button class="add-btn" onclick="openModal()">+ Add New</button>
+    </div>
+    <div class="punishments-list" id="punishmentsList"></div>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➕ Add Punishment</div>
+    <div class="input-group">
+      <input class="emoji-input" id="emojiInput" type="text" placeholder="😈" maxlength="2">
+      <input class="text-input" id="textInput" type="text" placeholder="e.g. Do 20 jumping jacks!" maxlength="50">
+    </div>
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+      <button class="confirm-btn" onclick="addPunishment()">Add to Wheel! 🎡</button>
+    </div>
+  </div>
+</div>
+
+<!-- Result Overlay -->
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-popup">
+    <div class="popup-label">Your Punishment Is...</div>
+    <span class="popup-emoji" id="popupEmoji">😱</span>
+    <div class="popup-punishment" id="popupText">Do 10 push-ups!</div>
+    <button class="dismiss-btn" onclick="dismissResult()">I Accept My Fate! 😤</button>
+  </div>
+</div>
+
+<script>
+  const COLORS = [
+    '#ff3c6e','#ff7c2a','#ffbe00','#7fff6e','#00e5ff','#a855f7',
+    '#ff6eb4','#4ade80','#fb923c','#38bdf8','#f472b6','#facc15'
+  ];
+
+  let punishments = [
+    { emoji: '🤸', text: 'Do 10 jumping jacks!', color: COLORS[0] },
+    { emoji: '🐔', text: 'Do the chicken dance!', color: COLORS[1] },
+    { emoji: '🧹', text: 'Sweep the kitchen floor!', color: COLORS[2] },
+    { emoji: '🎤', text: 'Sing a silly song out loud!', color: COLORS[3] },
+    { emoji: '🐸', text: 'Hop like a frog for 30 sec!', color: COLORS[4] },
+    { emoji: '😶', text: 'Silent mode for 5 minutes!', color: COLORS[5] },
+    { emoji: '🧦', text: 'Wear socks on your hands!', color: COLORS[6] },
+    { emoji: '💃', text: 'Do the worm dance!', color: COLORS[7] },
+  ];
+
+  let currentAngle = 0;
+  let isSpinning = false;
+
+  const canvas = document.getElementById('wheelCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function drawWheel(rotation = 0) {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const r = cx - 8;
+    const n = punishments.length;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (n === 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = 'bold 14px Nunito';
+      ctx.textAlign = 'center';
+      ctx.fillText('Add punishments!', cx, cy);
+      return;
+    }
+
+    const sliceAngle = (Math.PI * 2) / n;
+
+    for (let i = 0; i < n; i++) {
+      const startAngle = rotation + i * sliceAngle;
+      const endAngle = startAngle + sliceAngle;
+
+      // Slice
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = punishments[i].color;
+      ctx.fill();
+
+      // Subtle border
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Emoji + text
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(startAngle + sliceAngle / 2);
+
+      const textR = r * 0.62;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Emoji
+      ctx.font = `${Math.min(22, 200 / n + 10)}px serif`;
+      ctx.fillText(punishments[i].emoji, textR, -8);
+
+      // Text
+      const fontSize = Math.max(9, Math.min(13, 180 / n + 4));
+      ctx.font = `bold ${fontSize}px Nunito`;
+      ctx.fillStyle = 'rgba(0,0,0,0.75)';
+      ctx.fillText(punishments[i].text, textR + 1, 9);
+      ctx.fillStyle = 'white';
+      ctx.fillText(punishments[i].text, textR, 8);
+
+      ctx.restore();
+    }
+
+    // Outer ring
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Outer glow ring
+    ctx.beginPath();
+    ctx.arc(cx, cy, r + 2, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,190,0,0.2)';
+    ctx.lineWidth = 5;
+    ctx.stroke();
+  }
+
+  function spinWheel() {
+    if (isSpinning || punishments.length < 2) return;
+    isSpinning = true;
+    document.getElementById('spinBtn').disabled = true;
+
+    const extraSpins = (Math.floor(Math.random() * 5) + 6) * Math.PI * 2;
+    const targetExtra = Math.random() * Math.PI * 2;
+    const totalRotation = extraSpins + targetExtra;
+    const duration = 4000 + Math.random() * 2000;
+    const startTime = performance.now();
+    const startAngle = currentAngle;
+
+    function easeOut(t) {
+      return 1 - Math.pow(1 - t, 4);
+    }
+
+    function animate(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOut(progress);
+      currentAngle = startAngle + totalRotation * easedProgress;
+      drawWheel(currentAngle);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        isSpinning = false;
+        document.getElementById('spinBtn').disabled = false;
+        showResult();
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  function getWinner() {
+    const n = punishments.length;
+    const sliceAngle = (Math.PI * 2) / n;
+    // The pointer sits at the top of the canvas, which is -PI/2 in canvas coords.
+    // Each slice i spans [currentAngle + i*sliceAngle, currentAngle + (i+1)*sliceAngle].
+    // We need to find which slice contains -PI/2.
+    // Rearrange: angleInWheel = (-PI/2 - currentAngle), then mod to [0, 2PI].
+    const pointerAngle = -Math.PI / 2;
+    let angleInWheel = ((pointerAngle - currentAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+    const index = Math.floor(angleInWheel / sliceAngle) % n;
+    return punishments[index];
+  }
+
+  function showResult() {
+    const winner = getWinner();
+    document.getElementById('popupEmoji').textContent = winner.emoji;
+    document.getElementById('popupText').textContent = winner.text;
+
+    // Update result card
+    const card = document.getElementById('resultCard');
+    card.innerHTML = `
+      <div class="result-label">Last Punishment</div>
+      <div class="result-emoji">${winner.emoji}</div>
+      <div class="result-text">${winner.text}</div>
+    `;
+
+    // Show overlay
+    document.getElementById('resultOverlay').classList.add('show');
+    spawnConfetti();
+  }
+
+  function dismissResult() {
+    document.getElementById('resultOverlay').classList.remove('show');
+  }
+
+  function spawnConfetti() {
+    const colors = [COLORS[0], COLORS[1], COLORS[2], COLORS[3], COLORS[4], COLORS[5]];
+    for (let i = 0; i < 60; i++) {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        el.style.width = (Math.random() * 8 + 6) + 'px';
+        el.style.height = (Math.random() * 8 + 6) + 'px';
+        const dur = (Math.random() * 2 + 2);
+        el.style.animationDuration = dur + 's';
+        el.style.animationDelay = (Math.random() * 0.5) + 's';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), (dur + 1) * 1000);
+      }, i * 30);
+    }
+  }
+
+  function renderList() {
+    const list = document.getElementById('punishmentsList');
+    list.innerHTML = '';
+    punishments.forEach((p, i) => {
+      const item = document.createElement('div');
+      item.className = 'punishment-item';
+      item.innerHTML = `
+        <div class="punishment-color" style="background:${p.color};color:${p.color}"></div>
+        <span class="punishment-emoji">${p.emoji}</span>
+        <span class="punishment-name">${p.text}</span>
+        <button class="delete-btn" onclick="deletePunishment(${i})">✕</button>
+      `;
+      list.appendChild(item);
+    });
+    drawWheel(currentAngle);
+  }
+
+  function deletePunishment(i) {
+    if (punishments.length <= 2) {
+      alert("Need at least 2 punishments on the wheel!");
+      return;
+    }
+    punishments.splice(i, 1);
+    renderList();
+  }
+
+  function openModal() {
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('textInput').focus();
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.getElementById('emojiInput').value = '';
+    document.getElementById('textInput').value = '';
+  }
+
+  function addPunishment() {
+    const emoji = document.getElementById('emojiInput').value.trim() || '😈';
+    const text = document.getElementById('textInput').value.trim();
+    if (!text) {
+      document.getElementById('textInput').focus();
+      return;
+    }
+    const color = COLORS[punishments.length % COLORS.length];
+    punishments.push({ emoji, text, color });
+    renderList();
+    closeModal();
+  }
+
+  // Close modal on overlay click
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  });
+
+  // Enter key to add
+  document.getElementById('textInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') addPunishment();
+  });
+
+  // Canvas click = spin
+  canvas.addEventListener('click', spinWheel);
+
+  // Init
+  renderList();
+</script>
+</body>
+</html>
